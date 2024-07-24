@@ -51,28 +51,28 @@ class _DashboardScreenState extends State<DashboardScreen> {
 
   void _initializeDatabaseListener() {
     _dbRef = FirebaseDatabase.instance.ref();
-    DatabaseReference stream = _dbRef.child('photos/photo');
-    stream.onValue.listen((event) {
+
+    _dbRef.child('photos/photo').onValue.listen((event) {
       setState(() {
         _base64Image = event.snapshot.value as String?;
       });
     });
-    DatabaseReference latitude = _dbRef.child('Latitude');
-    latitude.onValue.listen((event) {
+
+    _dbRef.child('Latitude').onValue.listen((event) {
       setState(() {
         _latitude = event.snapshot.value as String?;
         _updateMap();
       });
     });
-    DatabaseReference longitude = _dbRef.child('Longitude');
-    longitude.onValue.listen((event) {
+
+    _dbRef.child('Longitude').onValue.listen((event) {
       setState(() {
         _longitude = event.snapshot.value as String?;
         _updateMap();
       });
     });
-    DatabaseReference speed = _dbRef.child('speed');
-    speed.onValue.listen((event) {
+
+    _dbRef.child('speed').onValue.listen((event) {
       setState(() {
         _speed = event.snapshot.value as String?;
       });
@@ -88,6 +88,17 @@ class _DashboardScreenState extends State<DashboardScreen> {
     }
   }
 
+  void _sendCapture(String value) {
+    _dbRef.child("cap").set(value).then((_) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Capture Image')),
+      );
+    }).catchError((error) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Failed capture image')),
+      );
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -141,11 +152,14 @@ class _DashboardScreenState extends State<DashboardScreen> {
                       ],
                       annotations: <GaugeAnnotation>[
                         GaugeAnnotation(
-                          widget: (_speed != null) ? Text(
-                            '$_speed Km/h',
-                            style: const TextStyle(
-                                fontSize: 25, fontWeight: FontWeight.bold),
-                          ) : const CircularProgressIndicator(),
+                          widget: (_speed != null)
+                              ? Text(
+                                  '$_speed Km/h',
+                                  style: const TextStyle(
+                                      fontSize: 25,
+                                      fontWeight: FontWeight.bold),
+                                )
+                              : const CircularProgressIndicator(),
                           angle: 90,
                           positionFactor: 0.5,
                         )
@@ -166,21 +180,23 @@ class _DashboardScreenState extends State<DashboardScreen> {
                             'Latitude',
                             style: TextStyle(fontWeight: FontWeight.bold),
                           ),
-                          (_latitude != null) ? Container(
-                            width: MediaQuery.of(context).size.width * .5,
-                            decoration: BoxDecoration(
-                                border: Border.all(color: Colors.grey),
-                                borderRadius: BorderRadius.circular(8.0)),
-                            child: Padding(
-                              padding: const EdgeInsets.all(8.0),
-                              child: Center(
-                                  child: Text(
-                                _latitude.toString(),
-                                style: const TextStyle(
-                                    fontWeight: FontWeight.bold),
-                              )),
-                            ),
-                          ) : const CircularProgressIndicator(),
+                          (_latitude != null)
+                              ? Container(
+                                  width: MediaQuery.of(context).size.width * .5,
+                                  decoration: BoxDecoration(
+                                      border: Border.all(color: Colors.grey),
+                                      borderRadius: BorderRadius.circular(8.0)),
+                                  child: Padding(
+                                    padding: const EdgeInsets.all(8.0),
+                                    child: Center(
+                                        child: Text(
+                                      _latitude.toString(),
+                                      style: const TextStyle(
+                                          fontWeight: FontWeight.bold),
+                                    )),
+                                  ),
+                                )
+                              : const CircularProgressIndicator(),
                         ],
                       ),
                     ),
@@ -198,21 +214,23 @@ class _DashboardScreenState extends State<DashboardScreen> {
                             'Longitude',
                             style: TextStyle(fontWeight: FontWeight.bold),
                           ),
-                          (_longitude != null) ? Container(
-                            width: MediaQuery.of(context).size.width * .5,
-                            decoration: BoxDecoration(
-                                border: Border.all(color: Colors.grey),
-                                borderRadius: BorderRadius.circular(8.0)),
-                            child: Padding(
-                              padding: const EdgeInsets.all(8.0),
-                              child: Center(
-                                  child: Text(
-                                _longitude.toString(),
-                                style: const TextStyle(
-                                    fontWeight: FontWeight.bold),
-                              )),
-                            ),
-                          ) : const CircularProgressIndicator(),
+                          (_longitude != null)
+                              ? Container(
+                                  width: MediaQuery.of(context).size.width * .5,
+                                  decoration: BoxDecoration(
+                                      border: Border.all(color: Colors.grey),
+                                      borderRadius: BorderRadius.circular(8.0)),
+                                  child: Padding(
+                                    padding: const EdgeInsets.all(8.0),
+                                    child: Center(
+                                        child: Text(
+                                      _longitude.toString(),
+                                      style: const TextStyle(
+                                          fontWeight: FontWeight.bold),
+                                    )),
+                                  ),
+                                )
+                              : const CircularProgressIndicator(),
                         ],
                       ),
                     ),
@@ -222,41 +240,44 @@ class _DashboardScreenState extends State<DashboardScreen> {
               const SizedBox(
                 height: 20.0,
               ),
-              (_latitude != null && _longitude != null) ? SizedBox(
-                height: MediaQuery.of(context).size.height * .5,
-                child: FlutterMap(
-                  mapController: _mapController,
-                  options:  MapOptions(
-                      initialCenter: LatLng(double.parse(_latitude!), double.parse(_longitude!)),
-                      initialZoom: 16,
-                      onMapReady: (){
-                        setState(() {
-                          _mapReady = true;
-                        });
-                        _updateMap();
-                      }
-                  ),
-                  children: [
-                    TileLayer(
-                      urlTemplate:
-                          'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
-                      userAgentPackageName: 'com.example.bhimospeeds',
-                    ),
-                     MarkerLayer(
-                      markers: [
-                        Marker(
-                          point: LatLng(double.parse(_latitude!), double.parse(_longitude!)),
-                          child: const Icon(
-                            Icons.location_on,
-                            size: 40,
-                            color: Colors.red,
+              (_latitude != null && _longitude != null)
+                  ? SizedBox(
+                      height: MediaQuery.of(context).size.height * .5,
+                      child: FlutterMap(
+                        mapController: _mapController,
+                        options: MapOptions(
+                            initialCenter: LatLng(double.parse(_latitude!),
+                                double.parse(_longitude!)),
+                            initialZoom: 16,
+                            onMapReady: () {
+                              setState(() {
+                                _mapReady = true;
+                              });
+                              _updateMap();
+                            }),
+                        children: [
+                          TileLayer(
+                            urlTemplate:
+                                'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
+                            userAgentPackageName: 'com.example.bhimospeeds',
                           ),
-                        ),
-                      ],
+                          MarkerLayer(
+                            markers: [
+                              Marker(
+                                point: LatLng(double.parse(_latitude!),
+                                    double.parse(_longitude!)),
+                                child: const Icon(
+                                  Icons.location_on,
+                                  size: 40,
+                                  color: Colors.red,
+                                ),
+                              ),
+                            ],
+                          )
+                        ],
+                      ),
                     )
-                  ],
-                ),
-              ) : const CircularProgressIndicator(),
+                  : const CircularProgressIndicator(),
               const SizedBox(
                 height: 20.0,
               ),
@@ -264,15 +285,36 @@ class _DashboardScreenState extends State<DashboardScreen> {
                 'Camera',
                 style: TextStyle(fontWeight: FontWeight.bold),
               ),
-              Container(
-                decoration:
-                    BoxDecoration(borderRadius: BorderRadius.circular(8.0)),
-                child: Padding(
-                  padding: const EdgeInsets.all(8.0),
-                  child: _base64Image == null
-                      ? const CircularProgressIndicator()
-                      : Image.memory(base64Decode(_base64Image!)),
-                ),
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Container(
+                    decoration:
+                        BoxDecoration(borderRadius: BorderRadius.circular(8.0)),
+                    child: Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: _base64Image == null
+                          ? const CircularProgressIndicator()
+                          : Image.memory(base64Decode(_base64Image!)),
+                    ),
+                  ),
+                  const SizedBox(
+                    height: 20.0,
+                  ),
+                  SizedBox(
+                    width: double.infinity,
+                    child: ElevatedButton.icon(
+                      onPressed: (){
+                        _sendCapture("1");
+                      },
+                      icon: const Icon(Icons.photo_camera_outlined, color: Colors.white,),
+                      label: const Text('Capture', style: TextStyle(fontWeight: FontWeight.bold, color: Colors.white),),
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: Colors.teal,
+                      ),
+                    ),
+                  )
+                ],
               )
             ],
           ),
