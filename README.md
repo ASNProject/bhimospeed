@@ -21,7 +21,7 @@ flutter run
 flutter build apk --release
 ```
 
-Link Tutorial
+Link Tutorial : https://youtu.be/yB1jrQ7veFY
 
 ### Ikhtisar
 Kode ini mendefinisikan DashboardScreen yang menampilkan dasbor waktu nyata. Dasbor ini menunjukkan kecepatan, lintang, bujur, peta, dan gambar dari kamera. Menggunakan Firebase untuk pembaruan data waktu nyata dan paket flutter_map serta syncfusion_flutter_gauges untuk komponen peta dan pengukur.
