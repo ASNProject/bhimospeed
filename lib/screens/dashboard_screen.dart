@@ -298,22 +298,6 @@ class _DashboardScreenState extends State<DashboardScreen> {
                           : Image.memory(base64Decode(_base64Image!)),
                     ),
                   ),
-                  const SizedBox(
-                    height: 20.0,
-                  ),
-                  SizedBox(
-                    width: double.infinity,
-                    child: ElevatedButton.icon(
-                      onPressed: (){
-                        _sendCapture("1");
-                      },
-                      icon: const Icon(Icons.photo_camera_outlined, color: Colors.white,),
-                      label: const Text('Capture', style: TextStyle(fontWeight: FontWeight.bold, color: Colors.white),),
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: Colors.teal,
-                      ),
-                    ),
-                  )
                 ],
               )
             ],
